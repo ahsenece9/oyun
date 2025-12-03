@@ -68,7 +68,12 @@ const COLORS = [
 
 const Button = ({ onClick, children, className = '', color = 'bg-blue-500', disabled = false }: any) => (
   <button
-    onClick={onClick}
+    type="button"
+    onClick={(e) => {
+      e.preventDefault();
+      e.stopPropagation();
+      if (onClick) onClick(e);
+    }}
     disabled={disabled}
     className={`${color} text-white rounded-2xl p-3 shadow-[0_4px_0_rgba(0,0,0,0.2)] active:shadow-none active:translate-y-1 transition-all duration-150 flex flex-col items-center justify-center gap-1 font-bold text-base disabled:opacity-50 disabled:cursor-not-allowed ${className}`}
   >
@@ -78,7 +83,12 @@ const Button = ({ onClick, children, className = '', color = 'bg-blue-500', disa
 
 const IconButton = ({ onClick, icon: Icon, active = false, color = 'bg-white', size = 28 }: any) => (
   <button
-    onClick={onClick}
+    type="button"
+    onClick={(e) => {
+      e.preventDefault();
+      e.stopPropagation();
+      if (onClick) onClick(e);
+    }}
     className={`${active ? 'ring-4 ring-yellow-400 scale-110' : ''} ${color} p-2 rounded-full shadow-[0_3px_0_rgba(0,0,0,0.1)] hover:scale-105 active:shadow-none active:translate-y-1 transition-all flex items-center justify-center`}
   >
     <Icon size={size} color="#333" />
@@ -203,28 +213,7 @@ function App() {
     addScore(5); // Creating characters gives a small reward
   };
 
-  if (!apiKey && !loadingKey) {
-    return (
-      <div className="min-h-screen bg-sky-300 flex flex-col items-center justify-center p-4 font-sans text-center relative overflow-hidden">
-         {/* Background Decoration */}
-         <div className="absolute top-10 left-10 text-sky-200 animate-bounce"><Cloud size={100} /></div>
-         <div className="absolute bottom-20 right-10 text-sky-200 animate-pulse"><Sun size={120} /></div>
 
-        <div className="bg-white p-8 rounded-[3rem] shadow-2xl max-w-md w-full animate-scale-in border-8 border-sky-400 relative z-10">
-          <div className="bg-sky-100 w-20 h-20 rounded-full flex items-center justify-center mx-auto mb-4">
-              <Rocket size={40} className="text-sky-500" />
-          </div>
-          <h1 className="text-3xl font-black text-sky-600 mb-2">Hoşgeldiniz! 🚀</h1>
-          <p className="text-gray-500 mb-8 font-medium">
-            Maceraya başlamak için sihirli anahtarı seçmelisin.
-          </p>
-          <Button onClick={requestApiKey} color="bg-emerald-500 w-full hover:bg-emerald-400">
-            Başla (Anahtar Seç)
-          </Button>
-        </div>
-      </div>
-    );
-  }
 
   return (
     <div className="fixed inset-0 font-sans select-none overflow-hidden touch-none">
@@ -275,76 +264,7 @@ function App() {
 
 // --- Views ---
 
-function HomeMenu({ setView, characters }: { setView: (v: ViewState) => void, characters: Character[] }) {
-  
-  return (
-    <div className="h-full flex flex-col items-center justify-center gap-4 animate-fade-in py-2">
-      
-      {/* LOGO (Compact) */}
-      <div className="text-center shrink-0 z-10 mt-2">
-        <h1 className="text-5xl md:text-6xl font-black text-white drop-shadow-[0_4px_0_rgba(0,0,0,0.2)] stroke-2 stroke-black" style={{ fontFamily: '"Comic Sans MS", "Chalkboard SE", sans-serif', textShadow: '3px 3px 0px #FF6B6B' }}>
-            Düşler Ülkesi
-        </h1>
-      </div>
-
-      {/* MAIN DASHBOARD GRID */}
-      <div className="flex-1 w-full max-w-5xl flex flex-col md:flex-row gap-6 items-stretch justify-center max-h-[70vh]">
-        
-        {/* Left Col: Creative */}
-        <div className="flex-1 bg-white/60 backdrop-blur-md p-4 rounded-[2rem] border-4 border-white/80 shadow-xl flex flex-col gap-2 relative overflow-hidden group hover:scale-[1.02] transition-transform">
-            <div className="absolute -bottom-10 -left-10 text-pink-200/50 rotate-12"><Palette size={150} /></div>
-            <div className="flex justify-center"><SectionTitle icon={Wand2} title="Yaratıcı Stüdyo" color="bg-pink-500" /></div>
-            
-            <div className="flex-1 grid grid-cols-2 gap-3 items-center content-center">
-                <Button onClick={() => setView('draw')} color="bg-gradient-to-br from-orange-400 to-amber-500 h-full max-h-36" className="group">
-                    <Pencil size={36} className="text-white mb-1 group-hover:scale-110 transition-transform" />
-                    <span className="text-base md:text-xl font-black">Çizim</span>
-                </Button>
-                <Button onClick={() => setView('magic')} color="bg-gradient-to-br from-purple-500 to-indigo-600 h-full max-h-36" className="group">
-                    <Sparkles size={36} className="text-white mb-1 group-hover:scale-110 transition-transform" />
-                    <span className="text-base md:text-xl font-black">Sihirbaz</span>
-                </Button>
-                <Button onClick={() => setView('gallery')} color="bg-gradient-to-br from-teal-400 to-cyan-600 h-full max-h-36" className="group">
-                    <ImageIcon size={36} className="text-white mb-1 group-hover:scale-110 transition-transform" />
-                    <span className="text-base md:text-xl font-black">Galeri</span>
-                </Button>
-                <Button onClick={() => setView('stories')} color="bg-gradient-to-br from-rose-400 to-pink-600 h-full max-h-36" className="group">
-                    <BookOpen size={36} className="text-white mb-1 group-hover:scale-110 transition-transform" />
-                    <span className="text-base md:text-xl font-black">Masallar</span>
-                </Button>
-            </div>
-        </div>
-
-        {/* Right Col: Games */}
-        <div className="flex-1 bg-white/60 backdrop-blur-md p-4 rounded-[2rem] border-4 border-white/80 shadow-xl flex flex-col gap-2 relative overflow-hidden group hover:scale-[1.02] transition-transform">
-             <div className="absolute -top-5 -right-5 text-emerald-200/50 -rotate-12"><Gamepad2 size={150} /></div>
-             <div className="flex justify-center"><SectionTitle icon={Trophy} title="Oyun Odası" color="bg-emerald-500" /></div>
-             
-             <div className="flex-1 grid grid-cols-2 gap-3 items-center content-center">
-                <Button onClick={() => setView('puzzle')} color="bg-gradient-to-br from-yellow-400 to-orange-500 h-full max-h-28" className="group">
-                    <KeyIcon size={28} />
-                    <span className="text-base font-black">Şifreler</span>
-                </Button>
-                <Button onClick={() => setView('matrix')} color="bg-gradient-to-br from-blue-400 to-cyan-500 h-full max-h-28" className="group">
-                    <Grid2X2 size={28} className="text-white group-hover:rotate-90 transition-transform"/>
-                    <span className="text-base font-black">Matris</span>
-                </Button>
-                 <Button onClick={() => setView('memory')} color="bg-gradient-to-br from-indigo-400 to-violet-600 h-full max-h-28" className="group">
-                    <Brain size={28} className="text-white group-hover:scale-110 transition-transform"/>
-                    <span className="text-base font-black">Hafıza</span>
-                </Button>
-                <Button onClick={() => setView('shadow')} color="bg-gradient-to-br from-rose-400 to-pink-600 h-full max-h-28" className="group">
-                    <Ghost size={28} className="text-white group-hover:scale-110 transition-transform"/>
-                    <span className="text-base font-black">Gölgeler</span>
-                </Button>
-             </div>
-        </div>
-      </div>
-    </div>
-  );
-}
-
-// Icon helper for puzzle
+// Icon helper for puzzle (Moved up for scope visibility)
 const KeyIcon = ({ size }: {size: number}) => (
     <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" className="text-white">
         <circle cx="7.5" cy="15.5" r="5.5" />
@@ -352,6 +272,92 @@ const KeyIcon = ({ size }: {size: number}) => (
         <path d="m15.5 7.5 3 3L22 7l-3-3" />
     </svg>
 )
+
+const DashboardButton = ({ onClick, color, icon: Icon, label, delay }: any) => (
+    <button 
+        type="button"
+        onClick={(e) => { e.preventDefault(); onClick && onClick(e); }}
+        className={`
+            relative h-full min-h-[100px] rounded-[2rem] bg-gradient-to-br ${color}
+            shadow-[0_8px_0_rgba(0,0,0,0.15)] active:shadow-none active:translate-y-2
+            flex flex-col items-center justify-center gap-2 text-white overflow-hidden
+            group transition-all duration-200 hover:brightness-110 border-4 border-white/20
+            animate-scale-in
+        `}
+        style={{ animationDelay: `${delay}ms`, animationFillMode: 'both' }}
+    >
+        <div className="absolute top-0 left-0 w-full h-1/2 bg-white/10 rounded-b-[50%] pointer-events-none"></div>
+        <Icon size={40} className="drop-shadow-md group-hover:scale-125 transition-transform duration-300" strokeWidth={2.5} />
+        <span className="font-black text-lg md:text-xl tracking-wide drop-shadow-md">{label}</span>
+    </button>
+)
+
+function HomeMenu({ setView, characters }: { setView: (v: ViewState) => void, characters: Character[] }) {
+  return (
+    <div className="h-full w-full flex flex-col items-center justify-center gap-6 animate-fade-in p-4 relative z-10">
+      
+      {/* MAGICAL TITLE */}
+      <div className="relative text-center z-20 hover:scale-105 transition-transform cursor-default">
+         <div className="absolute inset-0 blur-xl bg-white/40 rounded-full scale-150"></div>
+         <h1 className="relative text-6xl md:text-8xl font-black text-transparent bg-clip-text bg-gradient-to-r from-yellow-400 via-pink-500 to-purple-500 drop-shadow-[0_5px_5px_rgba(0,0,0,0.2)]" 
+             style={{ 
+               fontFamily: '"Comic Sans MS", "Chalkboard SE", sans-serif', 
+               WebkitTextStroke: '3px white',
+               filter: 'drop-shadow(0px 5px 0px rgba(0,0,0,0.1))'
+             }}>
+            Düşler Ülkesi
+        </h1>
+        <div className="absolute -top-6 -right-6 text-yellow-300 animate-spin-slow"><Sparkles size={48} fill="currentColor" /></div>
+        <div className="absolute -bottom-2 -left-4 text-pink-300 animate-bounce"><Star size={32} fill="currentColor" /></div>
+      </div>
+
+      {/* DASHBOARD CONTAINER */}
+      <div className="w-full max-w-6xl grid grid-cols-1 md:grid-cols-2 gap-8 items-stretch justify-center h-auto md:h-[60vh]">
+        
+        {/* LEFT: CREATIVE STUDIO (Pink Theme) */}
+        <div className="bg-white/70 backdrop-blur-xl rounded-[3rem] p-6 border-[6px] border-pink-200 shadow-2xl flex flex-col gap-4 relative overflow-visible group hover:-translate-y-2 transition-transform duration-300">
+            {/* Floating Icon Decoration */}
+            <div className="absolute -top-12 left-1/2 -translate-x-1/2 bg-pink-500 text-white p-4 rounded-full shadow-lg border-4 border-white z-10">
+                <Palette size={40} />
+            </div>
+            
+            <div className="mt-8 text-center">
+                <h2 className="text-3xl font-black text-pink-500 uppercase tracking-widest drop-shadow-sm">Yaratıcı Stüdyo</h2>
+                <p className="text-pink-400 font-bold text-sm">Hayal et, çiz ve yarat!</p>
+            </div>
+            
+            <div className="flex-1 grid grid-cols-2 gap-4">
+                <DashboardButton onClick={() => setView('draw')} color="from-orange-400 to-red-400" icon={Pencil} label="Çizim" delay="0" />
+                <DashboardButton onClick={() => setView('magic')} color="from-purple-500 to-indigo-500" icon={Wand2} label="Sihirbaz" delay="100" />
+                <DashboardButton onClick={() => setView('gallery')} color="from-teal-400 to-emerald-500" icon={ImageIcon} label="Galeri" delay="200" />
+                <DashboardButton onClick={() => setView('stories')} color="from-rose-400 to-pink-500" icon={BookOpen} label="Masallar" delay="300" />
+            </div>
+        </div>
+
+        {/* RIGHT: GAME ROOM (Blue/Green Theme) */}
+        <div className="bg-white/70 backdrop-blur-xl rounded-[3rem] p-6 border-[6px] border-cyan-200 shadow-2xl flex flex-col gap-4 relative overflow-visible group hover:-translate-y-2 transition-transform duration-300">
+             {/* Floating Icon Decoration */}
+             <div className="absolute -top-12 left-1/2 -translate-x-1/2 bg-cyan-500 text-white p-4 rounded-full shadow-lg border-4 border-white z-10">
+                <Gamepad2 size={40} />
+            </div>
+
+            <div className="mt-8 text-center">
+                <h2 className="text-3xl font-black text-cyan-600 uppercase tracking-widest drop-shadow-sm">Oyun Odası</h2>
+                 <p className="text-cyan-500 font-bold text-sm">Eğlen, öğren ve kazan!</p>
+            </div>
+             
+             <div className="flex-1 grid grid-cols-2 gap-4">
+                <DashboardButton onClick={() => setView('puzzle')} color="from-yellow-400 to-orange-500" icon={KeyIcon} label="Şifreler" delay="0" />
+                <DashboardButton onClick={() => setView('matrix')} color="from-blue-400 to-indigo-500" icon={Grid2X2} label="Matris" delay="100" />
+                <DashboardButton onClick={() => setView('memory')} color="from-violet-500 to-fuchsia-500" icon={Brain} label="Hafıza" delay="200" />
+                <DashboardButton onClick={() => setView('shadow')} color="from-emerald-400 to-teal-600" icon={Ghost} label="Gölgeler" delay="300" />
+             </div>
+        </div>
+
+      </div>
+    </div>
+  );
+}
 
 function GalleryView({ characters, onDelete }: { characters: Character[], onDelete: (id: string) => void }) {
     const [selectedId, setSelectedId] = useState<string | null>(null);
@@ -646,6 +652,7 @@ function DrawingPad({ onSave }: { onSave: (url: string) => void }) {
         <div className="flex gap-2 flex-wrap justify-center sm:justify-start">
           {COLORS.map(c => (
             <button
+              type="button"
               key={c}
               onClick={() => setColor(c)}
               className={`w-8 h-8 md:w-10 md:h-10 rounded-full border-4 shadow-sm transition-transform ${color === c ? 'border-gray-800 scale-125 z-10' : 'border-white hover:scale-110'}`}
@@ -656,9 +663,9 @@ function DrawingPad({ onSave }: { onSave: (url: string) => void }) {
         
         <div className="flex items-center gap-3 w-full sm:w-auto justify-center">
            <div className="flex gap-1 bg-gray-100 p-1.5 rounded-full">
-            <button onClick={() => setBrushSize(5)} className={`p-2 rounded-full transition-all ${brushSize === 5 ? 'bg-white shadow scale-110' : ''}`}><div className="w-2 h-2 bg-black rounded-full" /></button>
-            <button onClick={() => setBrushSize(15)} className={`p-2 rounded-full transition-all ${brushSize === 15 ? 'bg-white shadow scale-110' : ''}`}><div className="w-4 h-4 bg-black rounded-full" /></button>
-            <button onClick={() => setBrushSize(30)} className={`p-2 rounded-full transition-all ${brushSize === 30 ? 'bg-white shadow scale-110' : ''}`}><div className="w-6 h-6 bg-black rounded-full" /></button>
+            <button type="button" onClick={() => setBrushSize(5)} className={`p-2 rounded-full transition-all ${brushSize === 5 ? 'bg-white shadow scale-110' : ''}`}><div className="w-2 h-2 bg-black rounded-full" /></button>
+            <button type="button" onClick={() => setBrushSize(15)} className={`p-2 rounded-full transition-all ${brushSize === 15 ? 'bg-white shadow scale-110' : ''}`}><div className="w-4 h-4 bg-black rounded-full" /></button>
+            <button type="button" onClick={() => setBrushSize(30)} className={`p-2 rounded-full transition-all ${brushSize === 30 ? 'bg-white shadow scale-110' : ''}`}><div className="w-6 h-6 bg-black rounded-full" /></button>
           </div>
 
           <div className="h-8 w-[2px] bg-gray-200 mx-1"></div>
@@ -796,7 +803,9 @@ function MemoryGame({ characters, onScore }: { characters: Character[], onScore:
     const [flippedIndices, setFlippedIndices] = useState<number[]>([]);
     const [matches, setMatches] = useState(0);
 
-    useEffect(() => {
+    const resetMemoryGame = (e?: any) => {
+        if(e) { e.preventDefault(); e.stopPropagation(); }
+        
         // Init Game
         const pool = getGameCharacters(characters).slice(0, 6); // Pick 6 distinct
         const deck = [...pool, ...pool] // Duplicate
@@ -811,6 +820,11 @@ function MemoryGame({ characters, onScore }: { characters: Character[], onScore:
         
         setCards(deck);
         setMatches(0);
+        setFlippedIndices([]);
+    };
+
+    useEffect(() => {
+        resetMemoryGame();
     }, [characters]);
 
     const handleCardClick = (idx: number) => {
@@ -857,12 +871,13 @@ function MemoryGame({ characters, onScore }: { characters: Character[], onScore:
                     </div>
                     <h2 className="text-4xl font-black text-indigo-600 mb-2">HARİKA!</h2>
                     <p className="text-gray-400 mb-6 font-bold">Hafızan çok güçlü.</p>
-                    <Button onClick={() => window.location.reload()} color="bg-indigo-500 shadow-indigo-300">Tekrar Oyna</Button>
+                    <Button onClick={resetMemoryGame} color="bg-indigo-500 shadow-indigo-300">Tekrar Oyna</Button>
                 </div>
             ) : (
                 <div className="grid grid-cols-3 sm:grid-cols-4 gap-3 sm:gap-4 max-w-2xl w-full aspect-[3/4] sm:aspect-auto p-4">
                     {cards.map((card, idx) => (
                         <button
+                            type="button"
                             key={card.id}
                             onClick={() => handleCardClick(idx)}
                             className={`
@@ -940,6 +955,7 @@ function ShadowGame({ characters, onScore }: { characters: Character[], onScore:
              <div className="grid grid-cols-3 gap-6 w-full">
                  {levelData.options.map(opt => (
                      <button
+                        type="button"
                         key={opt.id}
                         onClick={() => handleSelect(opt.id)}
                         className={`
@@ -1140,6 +1156,7 @@ function PuzzleGame({ characters, onScore }: { characters: Character[], onScore:
              <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
                  {gameData.options.map((opt, idx) => (
                      <button
+                        type="button"
                         key={idx}
                         onClick={() => handleOptionClick(opt.isCorrect, idx)}
                         className={`
@@ -1288,6 +1305,7 @@ function MatrixGame({ onScore }: { onScore: () => void }) {
             <div className="flex gap-4 w-full justify-between max-w-[80vmin] shrink-0">
                 {levelData.options.map((opt, i) => (
                     <button
+                        type="button"
                         key={i}
                         onClick={() => handleSelect(opt.correct, i)}
                         className={`
